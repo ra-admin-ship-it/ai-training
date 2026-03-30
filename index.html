@@ -166,27 +166,46 @@
 
     .stats-row {
       display: flex;
-      gap: 32px;
+      align-items: center;
       justify-content: center;
       margin-bottom: 48px;
-      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 0;
+      max-width: 480px;
+      width: 100%;
     }
 
     .stat-item {
       text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      flex-shrink: 0;
     }
 
     .stat-num {
       font-family: 'Space Mono', monospace;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--text);
+      line-height: 1;
     }
 
     .stat-label {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
-      margin-top: 4px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
     /* ─── NAME INPUT ─── */
@@ -884,29 +903,39 @@
 
     <div class="stats-row">
       <div class="stat-item">
-        <div class="stat-num">6</div>
         <div class="stat-label">モジュール</div>
+        <div class="stat-num">6</div>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat-item">
-        <div class="stat-num">24</div>
         <div class="stat-label">レッスン</div>
+        <div class="stat-num">18</div>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat-item">
-        <div class="stat-num">~3h</div>
         <div class="stat-label">学習時間</div>
+        <div class="stat-num">約4h</div>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat-item">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">無料</div>
+        <div class="stat-label">受講料</div>
+        <div class="stat-num">無料</div>
       </div>
     </div>
 
+
     <div class="name-form">
-      <div class="name-label">まずお名前を入力してください</div>
+      <div class="name-label">まずお名前と会社名を入力してください</div>
       <input type="text" class="name-input" id="userName" placeholder="山田 太郎" maxlength="30">
+      <input type="text" class="name-input" id="userCompany" placeholder="株式会社〇〇" maxlength="50">
     </div>
 
     <button class="btn-primary" onclick="startTraining()">研修を始める →</button>
+
+
+
+
+
   </div>
 </div>
 
@@ -1576,10 +1605,34 @@ const MODULES = [
 ];
 
 // ══════════════════════════════
+// GAS ENDPOINT
+// ══════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwTlNbXt_jtGRI5olye6E9-APoniOw8hnS-4uhU028s02FM4vxibZS43A0JxVq8teK3/exec';
+
+function sendToGAS(lessonData) {
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return;
+  const mi = lessonData.mi;
+  const li = lessonData.li;
+  const payload = {
+    name: state.userName,
+    company: state.userCompany || '',
+    moduleName: MODULES[mi].title,
+    lessonName: MODULES[mi].lessons[li].title,
+    quizCorrect: lessonData.correct,
+    totalCompleted: Object.keys(state.completedLessons).length
+  };
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }).catch(() => {});
+}
+
+// ══════════════════════════════
 // STATE
 // ══════════════════════════════
 let state = {
   userName: '',
+  userCompany: '',
   completedLessons: {},   // { "moduleId-lessonId": true }
   completedModules: {},   // { moduleId: true }
   quizScores: {},         // { "moduleId-lessonId": true }
@@ -1615,8 +1668,11 @@ function showScreen(id) {
 // ══════════════════════════════
 function startTraining() {
   const input = document.getElementById('userName').value.trim();
+  const company = document.getElementById('userCompany').value.trim();
   if (!input) { alert('お名前を入力してください'); return; }
+  if (!company) { alert('会社名を入力してください'); return; }
   state.userName = input;
+  state.userCompany = company;
   saveState();
   showModules();
 }
@@ -1806,6 +1862,7 @@ function submitAnswer() {
   const allDone = MODULES[mi].lessons.every((_, idx) => state.completedLessons[`${mi}-${idx}`]);
   if (allDone) state.completedModules[mi] = true;
 
+  sendToGAS({ mi, li, correct });
   saveState();
   buildNav(mi, li);
   renderSidebar();
@@ -1878,6 +1935,9 @@ function printCert() { window.print(); }
 loadState();
 if (state.userName) {
   document.getElementById('userName').value = state.userName;
+}
+if (state.userCompany) {
+  document.getElementById('userCompany').value = state.userCompany;
 }
 </script>
 </body>
