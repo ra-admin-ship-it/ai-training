@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI活用研修プログラム | ビジネスパーソンのためのAI入門</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a28;
+      --accent: #6c63ff;
+      --accent2: #ff6b6b;
+      --accent3: #43e97b;
+      --text: #e8e8f0;
+      --text-muted: #7878a0;
+      --border: rgba(108,99,255,0.2);
+      --gold: #ffd700;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── GRID BACKGROUND ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── SCREENS ─── */
+    .screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+    .screen.active { display: flex; flex-direction: column; }
+
+    /* ─── TOP HEADER ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 28px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      opacity: 0.9;
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(108,99,255,0.4);
+    }
+
+    .logo-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-bar-mini {
+      width: 120px;
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-mini-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* ─── WELCOME SCREEN ─── */
+    #welcome {
+      align-items: center;
+      justify-content: center;
+      padding: 60px 32px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 32px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .hero-badge::before {
+      content: '▶';
+      font-size: 8px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1.hero-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.8;
+      margin: 0 auto 40px;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      justify-content: center;
+      margin-bottom: 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 40px;
+      max-width: 480px;
+    }
+
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .stat-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 4px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ─── NAME INPUT ─── */
+    .name-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .name-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .name-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 16px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      width: 300px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .name-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9c56ff);
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(108,99,255,0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* ─── MODULES GRID ─── */
+    #modules-screen {
+      padding: 0 0 60px;
+    }
+
+    .modules-header {
+      padding: 40px 40px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .greeting {
+      font-size: 13px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 8px;
+    }
+
+    .modules-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .modules-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .overall-progress {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      max-width: 500px;
+    }
+
+    .overall-progress-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 4px;
+      transition: width 0.8s ease;
+    }
+
+    .progress-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      padding: 32px 40px;
+    }
+
+    .module-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(108,99,255,0.4);
+      box-shadow: 0 12px 40px rgba(108,99,255,0.15);
+    }
+
+    .module-card:hover::before {
+      opacity: 1;
+    }
+
+    .module-card.completed {
+      border-color: rgba(67,233,123,0.3);
+    }
+
+    .module-card.completed::before {
+      background: linear-gradient(90deg, var(--accent3), #00d2ff);
+      opacity: 1;
+    }
+
+    .module-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .module-card.locked:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .module-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .module-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .module-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .status-new { background: rgba(108,99,255,0.2); color: var(--accent); }
+    .status-done { background: rgba(67,233,123,0.2); color: var(--accent3); }
+    .status-lock { background: rgba(120,120,160,0.2); color: var(--text-muted); }
+
+    .module-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .module-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .module-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .module-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .module-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ─── LESSON SCREEN ─── */
+    #lesson-screen {
+      flex-direction: row;
+    }
+
+    .lesson-sidebar {
+      width: 300px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
+
+    .sidebar-module-title {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0 24px 16px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .sidebar-lesson {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 24px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+    }
+
+    .sidebar-lesson:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-lesson.active { background: rgba(108,99,255,0.1); color: var(--accent); }
+    .sidebar-lesson.done { color: var(--accent3); }
+
+    .lesson-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .sidebar-lesson.active .lesson-dot { background: var(--accent); border-color: var(--accent); }
+    .sidebar-lesson.done .lesson-dot { background: var(--accent3); border-color: var(--accent3); }
+
+    /* ─── LESSON CONTENT ─── */
+    .lesson-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px;
+      max-width: 800px;
+    }
+
+    .lesson-breadcrumb {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .lesson-breadcrumb span { color: var(--accent); }
+
+    .lesson-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .lesson-meta-row {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lesson-body {
+      line-height: 1.9;
+      font-size: 15px;
+    }
+
+    .lesson-body h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lesson-body h3::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .lesson-body p {
+      margin-bottom: 16px;
+      color: #c8c8e0;
+    }
+
+    .highlight-box {
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .highlight-box .box-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .tip-box {
+      background: rgba(67,233,123,0.06);
+      border: 1px solid rgba(67,233,123,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .tip-box .box-title { color: var(--accent3); }
+
+    .warn-box {
+      background: rgba(255,107,107,0.06);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .warn-box .box-title { color: var(--accent2); }
+
+    .example-block {
+      background: #0d0d18;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .example-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .example-user { color: var(--accent); }
+    .example-ai { color: var(--accent3); }
+
+    ul.lesson-list {
+      list-style: none;
+      margin: 16px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    ul.lesson-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: #c8c8e0;
+    }
+
+    ul.lesson-list li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── QUIZ ─── */
+    .quiz-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-top: 40px;
+    }
+
+    .quiz-label {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-question {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .quiz-option {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent);
+      background: rgba(108,99,255,0.08);
+    }
+
+    .quiz-option.selected {
+      border-color: var(--accent);
+      background: rgba(108,99,255,0.12);
+    }
+
+    .quiz-option.correct {
+      border-color: var(--accent3);
+      background: rgba(67,233,123,0.1);
+      color: var(--accent3);
+    }
+
+    .quiz-option.wrong {
+      border-color: var(--accent2);
+      background: rgba(255,107,107,0.1);
+      color: var(--accent2);
+    }
+
+    .option-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .quiz-feedback {
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: rgba(67,233,123,0.1); border: 1px solid rgba(67,233,123,0.3); color: var(--accent3); }
+    .quiz-feedback.ng { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--accent2); }
+
+    .lesson-nav {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── COMPLETE SCREEN ─── */
+    #complete-screen {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 32px;
+    }
+
+    .complete-badge {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .complete-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--gold), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .complete-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.8;
+      margin: 0 auto 40px;
+    }
+
+    .cert-card {
+      background: linear-gradient(135deg, var(--surface), var(--surface2));
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 40px 60px;
+      max-width: 500px;
+      margin: 0 auto 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cert-card::before {
+      content: '★';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 100px;
+      color: rgba(255,215,0,0.05);
+    }
+
+    .cert-label {
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 16px;
+    }
+
+    .cert-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .cert-program {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .cert-score {
+      font-family: 'Space Mono', monospace;
+      font-size: 2.5rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .cert-score-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     WELCOME SCREEN
+══════════════════════════════════ -->
+<div id="welcome" class="screen active">
+  <header>
+    <div class="logo">
+      <img src="https://job-palette.co.jp/etto/wp-content/themes/mirize/assets/images/logo-jobpalette.png" alt="株式会社JOB PALETTE">
+      <div class="logo-divider"></div>
+      <span class="logo-label">AI TRAINING</span>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);">ビジネスパーソンのためのAI活用研修</div>
+  </header>
+
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;">
+    <div class="hero-badge">CORPORATE AI TRAINING PROGRAM</div>
+
+    <h1 class="hero-title">
+      AIを、<br>仕事の武器にする。
+    </h1>
+
+    <p class="hero-sub">
+      生成AIの基礎から実践的な業務活用まで、<br>
+      ビジネスパーソンが本当に必要なスキルを段階的に習得します。
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-label">モジュール</div>
+        <div class="stat-num">6</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-label">レッスン</div>
+        <div class="stat-num">18</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-label">学習時間</div>
+        <div class="stat-num">約4h</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-label">受講料</div>
+        <div class="stat-num">無料</div>
+      </div>
+    </div>
+
+
+    <div class="name-form">
+      <div class="name-label">まずお名前と会社名を入力してください</div>
+      <input type="text" class="name-input" id="userName" placeholder="山田 太郎" maxlength="30">
+      <input type="text" class="name-input" id="userCompany" placeholder="株式会社〇〇" maxlength="50">
+    </div>
+
+    <button class="btn-primary" onclick="startTraining()">研修を始める →</button>
+
+
+
+
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODULES SCREEN
+══════════════════════════════════ -->
+<div id="modules-screen" class="screen">
+  <header>
+    <div class="logo">
+      <img src="https://job-palette.co.jp/etto/wp-content/themes/mirize/assets/images/logo-jobpalette.png" alt="株式会社JOB PALETTE">
+      <div class="logo-divider"></div>
+      <span class="logo-label">AI TRAINING</span>
+    </div>
+    <div class="header-progress">
+      <span id="header-progress-text">0 / 6 完了</span>
+      <div class="progress-bar-mini">
+        <div class="progress-bar-mini-fill" id="header-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="modules-header">
+    <div class="greeting" id="greeting-text">WELCOME BACK</div>
+    <h2 class="modules-title">学習コース一覧</h2>
+    <p class="modules-sub">各モジュールを順番に受講してください。前のモジュールを完了すると次が解放されます。</p>
+    <div class="overall-progress">
+      <span class="overall-progress-label">全体進捗</span>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="overall-progress-fill" style="width:0%"></div>
+      </div>
+      <span class="progress-pct" id="overall-progress-pct">0%</span>
+    </div>
+  </div>
+
+  <div class="modules-grid" id="modules-grid">
+    <!-- JS で生成 -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     LESSON SCREEN
+══════════════════════════════════ -->
+<div id="lesson-screen" class="screen">
+  <div class="lesson-sidebar" id="lesson-sidebar">
+    <div class="sidebar-module-title" id="sidebar-module-title">モジュール</div>
+    <!-- JS で生成 -->
+  </div>
+  <div class="lesson-content">
+    <header style="position:static;padding:0 0 24px;margin-bottom:0;border-bottom:none;background:transparent;backdrop-filter:none;">
+      <button class="btn-secondary" onclick="goToModules()" style="font-size:13px;padding:8px 20px;">← 一覧に戻る</button>
+    </header>
+    <div class="lesson-breadcrumb" id="lesson-breadcrumb"></div>
+    <h2 class="lesson-title" id="lesson-title"></h2>
+    <div class="lesson-meta-row" id="lesson-meta"></div>
+    <div class="lesson-body" id="lesson-body"></div>
+    <div class="lesson-nav" id="lesson-nav"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     COMPLETE SCREEN
+══════════════════════════════════ -->
+<div id="complete-screen" class="screen">
+  <div>
+    <div class="complete-badge">🏆</div>
+    <h2 class="complete-title">研修修了！</h2>
+    <p class="complete-sub" id="complete-sub"></p>
+
+    <div class="cert-card">
+      <div class="cert-label">CERTIFICATE OF COMPLETION</div>
+      <div class="cert-name" id="cert-name"></div>
+      <div class="cert-program">AI活用研修プログラム</div>
+      <div class="cert-score" id="cert-score"></div>
+      <div class="cert-score-label">修了スコア</div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button class="btn-primary" onclick="printCert()">修了証を印刷</button>
+      <button class="btn-secondary" onclick="goToModules()">コースに戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const MODULES = [
+  {
+    id: 0,
+    icon: '🧠',
+    title: 'AIとは何か？基礎を理解する',
+    desc: '生成AIの仕組みと特徴を正しく理解し、活用の前提知識を身につけます。',
+    color: 'rgba(108,99,255,0.2)',
+    lessons: [
+      {
+        title: 'AIとは？機械学習から生成AIへ',
+        time: '15分',
+        content: `
+          <h3>AIの歴史と進化</h3>
+          <p>「AI（人工知能）」という言葉は1956年に生まれました。当初は専門家の知識をルールとして記述する「ルールベースAI」が主流でしたが、2010年代に「機械学習」と「ディープラーニング」の登場により革命的な進化を遂げます。</p>
+          <div class="highlight-box">
+            <div class="box-title">🔑 重要な概念</div>
+            <p><strong>生成AI（Generative AI）</strong>とは、テキスト・画像・音声・動画などを「生成」できるAIのこと。ChatGPT、Claude、Geminiなどが代表例です。</p>
+          </div>
+          <h3>なぜ今、生成AIが注目されているのか</h3>
+          <p>2022年11月にChatGPTがリリースされ、わずか2ヶ月で1億ユーザーを突破。これはNetflixが同数に達するまでの3.5年を大幅に上回るペースです。</p>
+          <ul class="lesson-list">
+            <li>自然な日本語で会話できる（専門知識不要）</li>
+            <li>文章作成・要約・翻訳・コード生成など多様なタスクに対応</li>
+            <li>24時間365日利用可能でコストが低い</li>
+            <li>業務効率を平均30〜40%向上させる可能性</li>
+          </ul>
+          <div class="tip-box">
+            <div class="box-title">💡 ポイント</div>
+            <p>生成AIは「魔法」でも「万能ツール」でもありません。適切な使い方を学ぶことで、初めて業務効率化の恩恵を受けられます。</p>
+          </div>
+          <h3>主要な生成AIツール比較</h3>
+          <ul class="lesson-list">
+            <li><strong>ChatGPT（OpenAI）</strong>：最も普及。GPT-4oで画像・音声も対応</li>
+            <li><strong>Claude（Anthropic）</strong>：長文処理と安全性に強み。業務文書向け</li>
+            <li><strong>Gemini（Google）</strong>：検索・GmailなどGoogle連携が強力</li>
+            <li><strong>Copilot（Microsoft）</strong>：Word・Excel・Teams等との統合</li>
+          </ul>
+        `,
+        quiz: {
+          question: 'ChatGPTがリリース後、1億ユーザーを達成するのにかかった期間はどれくらいですか？',
+          options: ['約2週間', '約2ヶ月', '約6ヶ月', '約1年'],
+          answer: 1,
+          explanation: '正解！ChatGPTは2022年11月のリリースからわずか2ヶ月で1億ユーザーを突破しました。これは歴史上最速の普及速度です。'
+        }
+      },
+      {
+        title: 'AIの得意・苦手を知る',
+        time: '12分',
+        content: `
+          <h3>生成AIが得意なこと</h3>
+          <p>生成AIを効果的に活用するには、まずその特性を正しく理解することが重要です。</p>
+          <ul class="lesson-list">
+            <li>文章の作成・編集・要約・翻訳</li>
+            <li>アイデアのブレインストーミング</li>
+            <li>情報の整理・構造化</li>
+            <li>コードの作成・デバッグ</li>
+            <li>質問への回答・説明</li>
+            <li>ロールプレイ（面接練習、交渉シミュレーションなど）</li>
+          </ul>
+          <div class="warn-box">
+            <div class="box-title">⚠️ 注意：AIが苦手なこと</div>
+            <p>• <strong>最新情報</strong>：学習データの期限があるため最新ニュースは不正確な場合あり<br>
+            • <strong>数値計算</strong>：複雑な計算は誤りが生じる可能性<br>
+            • <strong>事実確認</strong>：「もっともらしい嘘（ハルシネーション）」を生成することがある<br>
+            • <strong>個人情報</strong>：入力した情報が学習データになる可能性（企業ポリシーを確認）</p>
+          </div>
+          <h3>ハルシネーションとは？</h3>
+          <p>AIが実際には存在しない情報を、自信満々に回答する現象です。特に固有名詞・数値・引用などは必ず元情報を確認する習慣をつけましょう。</p>
+          <div class="example-block">
+            <div class="example-label">NG例：そのまま信じてしまうケース</div>
+            <div class="example-user">User: 〇〇社の2024年売上高を教えて</div>
+            <div class="example-ai">AI: 〇〇社の2024年売上高は△△億円です（※架空の数値の可能性）</div>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 対処法</div>
+            <p>重要な数値・事実は必ず公式情報で確認する。AIは「たたき台」として使い、最終確認は人間が行う。</p>
+          </div>
+        `,
+        quiz: {
+          question: '生成AIの「ハルシネーション」とはどのような現象ですか？',
+          options: ['AIが感情を持つこと', 'AIが存在しない情報を事実として回答すること', 'AIの処理速度が低下すること', 'AIが日本語を理解できないこと'],
+          answer: 1,
+          explanation: '正解！ハルシネーションとは、AIが実際には存在しない情報を自信を持って回答する現象です。重要な事実は必ず元情報で確認しましょう。'
+        }
+      },
+      {
+        title: 'AIと倫理・リスク管理',
+        time: '10分',
+        content: `
+          <h3>企業でAIを使う際のルール</h3>
+          <p>個人利用と異なり、業務でAIを活用する際は企業としてのリスク管理が必要です。</p>
+          <ul class="lesson-list">
+            <li><strong>機密情報の入力禁止</strong>：顧客情報・未公開情報・社外秘データはAIに入力しない</li>
+            <li><strong>著作権への注意</strong>：AI生成コンテンツの著作権は未確定な部分がある</li>
+            <li><strong>出力の確認義務</strong>：AI出力を無確認で社外に出さない</li>
+            <li><strong>利用記録の管理</strong>：どの業務にAIを使ったか記録する</li>
+          </ul>
+          <div class="warn-box">
+            <div class="box-title">⚠️ 実際にあった事例</div>
+            <p>2023年、Samsung社員がChatGPTに機密コードを入力し、社外に情報が漏洩するリスクが発生。多くの企業が社内でのAI利用ガイドラインを整備するきっかけになりました。</p>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 安全な活用の原則</div>
+            <p>「このデータを紙で捨てるとき、シュレッダーをかけるか？」→ Yes なら、AIにも入力しない。このシンプルな判断基準を持ちましょう。</p>
+          </div>
+        `,
+        quiz: {
+          question: '業務でAIを利用する際、絶対に避けるべきことはどれですか？',
+          options: ['文章の校正に使う', '顧客の個人情報をそのまま入力する', 'アイデア出しに使う', 'メールの下書きを作らせる'],
+          answer: 1,
+          explanation: '正解！顧客の個人情報をAIに入力することは情報漏洩リスクがあり、絶対に避けるべきです。'
+        }
+      }
+    ]
+  },
+  {
+    id: 1,
+    icon: '✍️',
+    title: 'プロンプト設計の基本',
+    desc: 'AIに正確に指示を出すための「プロンプトエンジニアリング」の基本技術を学びます。',
+    color: 'rgba(255,107,107,0.2)',
+    lessons: [
+      {
+        title: '良いプロンプトの条件',
+        time: '15分',
+        content: `
+          <h3>プロンプトとは</h3>
+          <p>プロンプトとはAIへの「指示文」のことです。同じAIでも、プロンプトの質によって出力の質は劇的に変わります。</p>
+          <div class="highlight-box">
+            <div class="box-title">🔑 良いプロンプトの4要素</div>
+            <p><strong>① 役割（Role）</strong>：AIに演じてもらう役割を指定<br>
+            <strong>② 背景（Context）</strong>：状況・目的を具体的に説明<br>
+            <strong>③ 指示（Instruction）</strong>：やってほしいことを明確に<br>
+            <strong>④ 形式（Format）</strong>：出力の形式・長さ・スタイルを指定</p>
+          </div>
+          <h3>Before / After 比較</h3>
+          <div class="example-block">
+            <div class="example-label">❌ 悪いプロンプト</div>
+            <div class="example-user">「営業メール書いて」</div>
+          </div>
+          <div class="example-block">
+            <div class="example-label">✅ 良いプロンプト</div>
+            <div class="example-user">「あなたはBtoB企業の営業担当です。<br>背景：中小企業の人事担当者に向けて、RPOサービスの初回アプローチメールを書いてください。<br>条件：・200字以内・件名も含める・堅すぎず親しみやすいトーン・CTA（次のアクション）を明記」</div>
+          </div>
+          <ul class="lesson-list">
+            <li>具体的な数値や条件を入れると精度が上がる</li>
+            <li>「〜しないで」より「〜してください」と肯定形で指示する</li>
+            <li>出力例を示すと品質が安定する（Few-shot）</li>
+          </ul>
+        `,
+        quiz: {
+          question: '良いプロンプトに含めるべき要素として正しいものはどれですか？',
+          options: ['できるだけ短く書く', '役割・背景・指示・形式を明確に書く', 'AIに任せて指示はあいまいにする', '日本語は使わずに英語で書く'],
+          answer: 1,
+          explanation: '正解！良いプロンプトには役割・背景・指示・形式の4要素を含めることで、AIの出力精度が大幅に向上します。'
+        }
+      },
+      {
+        title: '業務別プロンプトテンプレート',
+        time: '18分',
+        content: `
+          <h3>すぐに使えるテンプレート集</h3>
+          <p>以下のテンプレートをコピーして、〔〕内を自分の状況に置き換えてください。</p>
+          <div class="example-block">
+            <div class="example-label">📧 メール作成</div>
+            <div class="example-user">「あなたは〔会社名〕の〔役職〕です。<br>〔相手〕に対して〔目的〕のメールを書いてください。<br>トーン：〔ビジネス丁寧・フレンドリー〕<br>文字数：〔300字以内〕<br>必ず含める内容：〔CTA、期日〕」</div>
+          </div>
+          <div class="example-block">
+            <div class="example-label">📊 会議議事録の要約</div>
+            <div class="example-user">「以下の会議メモを要約してください。<br>形式：<br>- 決定事項（箇条書き）<br>- 次のアクション（担当者・期日付き）<br>- 保留事項<br>---<br>〔会議メモをここに貼り付け〕」</div>
+          </div>
+          <div class="example-block">
+            <div class="example-label">💡 アイデア出し</div>
+            <div class="example-user">「〔テーマ〕に関するアイデアを10個出してください。<br>対象：〔ターゲット〕<br>制約：〔予算・期間・リソース〕<br>重視する観点：〔実現可能性・独自性〕」</div>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 実践のコツ</div>
+            <p>最初から完璧を求めず、一度出力させてから「もっと具体的に」「トーンをもう少し柔らかく」などと追加指示でブラッシュアップするのが効率的です。</p>
+          </div>
+        `,
+        quiz: {
+          question: 'プロンプトで出力の質を高める追加指示として最も効果的なのはどれですか？',
+          options: ['「もっと頑張って」', '「トーンをもう少し丁寧にして、箇条書き3点にまとめてください」', '「やり直し」', '何も追加しない'],
+          answer: 1,
+          explanation: '正解！具体的に「トーン」「形式」「量」などを指定した追加指示が最も効果的です。'
+        }
+      },
+      {
+        title: 'Chain of Thought（思考の連鎖）',
+        time: '12分',
+        content: `
+          <h3>AIに「考えさせる」技術</h3>
+          <p>複雑な問題は、AIに段階的に考えさせることで精度が上がります。これを「Chain of Thought（CoT）」と呼びます。</p>
+          <div class="example-block">
+            <div class="example-label">💬 CoTプロンプトの例</div>
+            <div class="example-user">「以下の問題について、ステップバイステップで考えてから答えてください：<br>〔問題〕」</div>
+          </div>
+          <ul class="lesson-list">
+            <li>「ステップバイステップで考えてください」を追加するだけで正確性が向上</li>
+            <li>「まず〇〇を分析し、次に〜」と思考手順を指定するのも有効</li>
+            <li>複数の選択肢を提示させてから最良案を選ばせる</li>
+          </ul>
+          <div class="highlight-box">
+            <div class="box-title">🔑 実用例：採用面接フィードバック</div>
+            <p>「以下の面接メモをもとに、<br>①候補者の強み<br>②懸念点<br>③評価スコア（5段階）<br>④総合推薦コメント<br>の順番で分析してください。」</p>
+          </div>
+        `,
+        quiz: {
+          question: 'Chain of Thought（CoT）の目的は何ですか？',
+          options: ['AIを早く動かすこと', 'AIに段階的に思考させ、複雑な問題の精度を上げること', 'AIの返答を短くすること', '英語で回答させること'],
+          answer: 1,
+          explanation: '正解！CoTはAIに段階的な思考プロセスをたどらせることで、複雑な問題への回答精度を高める技術です。'
+        }
+      }
+    ]
+  },
+  {
+    id: 2,
+    icon: '⚡',
+    title: '業務効率化の実践',
+    desc: '文書作成・データ整理・情報収集など、日常業務への具体的なAI活用法を習得します。',
+    color: 'rgba(67,233,123,0.2)',
+    lessons: [
+      {
+        title: '文書作成・編集を10倍速に',
+        time: '20分',
+        content: `
+          <h3>AIで変わる文書作成フロー</h3>
+          <p>従来の文書作成は「ゼロから書く」でしたが、AIを使えば「たたき台を作らせてブラッシュアップする」フローに変わります。</p>
+          <ul class="lesson-list">
+            <li><strong>提案書・企画書</strong>：構成提案 → 各セクション生成 → 修正</li>
+            <li><strong>報告書</strong>：箇条書きメモ → 文章化 → 要約</li>
+            <li><strong>メール</strong>：要点を伝えるだけ → 全文生成</li>
+            <li><strong>プレゼン資料</strong>：アウトライン生成 → スライド文言生成</li>
+          </ul>
+          <div class="example-block">
+            <div class="example-label">実践例：週次報告の自動化</div>
+            <div class="example-user">「以下の箇条書きメモをもとに、上司向けの週次報告文を作成してください。<br>・先週の主な活動<br>・今週の目標<br>・課題と対処方針<br>---<br>〔メモをここに〕」</div>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 時短のコツ</div>
+            <p>AIに「たたき台」を作らせる → 人間が修正 → 再度AIに磨かせる。この3ステップで品質を保ちながら大幅な時短が実現します。</p>
+          </div>
+        `,
+        quiz: {
+          question: 'AIを使った文書作成の最も効率的なフローはどれですか？',
+          options: ['全て自分で書いてからAIに確認させる', 'AIにたたき台を作らせてから自分でブラッシュアップする', 'AIが書いたものをそのまま提出する', '文書作成にAIは使わない'],
+          answer: 1,
+          explanation: '正解！AIにたたき台を作らせてから自分でブラッシュアップする方法が最も効率的です。'
+        }
+      },
+      {
+        title: 'データ整理・分析支援',
+        time: '15分',
+        content: `
+          <h3>AIを使ったデータ活用</h3>
+          <p>Excelやスプレッドシートのデータをテキストで貼り付けるだけで、AIが分析・整理を行います。</p>
+          <ul class="lesson-list">
+            <li>表形式のデータ → 自然言語での分析・洞察</li>
+            <li>アンケート結果 → カテゴリ別集計・傾向分析</li>
+            <li>売上データ → 増減要因の仮説生成</li>
+            <li>議事録テキスト → 構造化・データベース化</li>
+          </ul>
+          <div class="highlight-box">
+            <div class="box-title">🔑 実践例：採用データ分析</div>
+            <p>「以下の応募者データを分析し、通過率が高いチャネルと低いチャネルを特定してください。また改善提案を3点挙げてください。<br>---<br>〔データを貼り付け〕」</p>
+          </div>
+          <div class="warn-box">
+            <div class="box-title">⚠️ 注意</div>
+            <p>個人情報・機密データはAIに入力しないこと。データを匿名化・加工した上で使用してください。</p>
+          </div>
+        `,
+        quiz: {
+          question: 'データをAIで分析する際の注意点として正しいものはどれですか？',
+          options: ['できるだけ多くの詳細データを入力する', '個人情報は匿名化してから使用する', '競合他社のデータも入力して比較させる', 'リアルタイムデータを直接接続する'],
+          answer: 1,
+          explanation: '正解！データをAIで分析する際は、個人情報を必ず匿名化・加工してから使用します。'
+        }
+      },
+      {
+        title: '会議・商談への活用',
+        time: '15分',
+        content: `
+          <h3>会議前・中・後でのAI活用</h3>
+          <p>会議・商談の全フェーズでAIを活用することで、準備の質と生産性が大幅に向上します。</p>
+          <div class="highlight-box">
+            <div class="box-title">📅 会議前の活用</div>
+            <p>• アジェンダ作成<br>• 相手企業の情報収集・整理<br>• 想定質問と回答の準備<br>• プレゼン資料のブラッシュアップ</p>
+          </div>
+          <div class="highlight-box">
+            <div class="box-title">📝 会議後の活用</div>
+            <p>• 議事録の作成・要約<br>• アクションアイテムの抽出<br>• フォローアップメールの作成<br>• 次回会議のアジェンダ案</p>
+          </div>
+          <div class="example-block">
+            <div class="example-label">実践例：商談前準備</div>
+            <div class="example-user">「明日の商談に向けて準備を手伝ってください。<br>相手：〔会社名・業種・規模〕<br>商談目的：〔初回挨拶・課題ヒアリング〕<br>提供サービス：〔RPO・採用支援〕<br>---<br>想定される相手の課題と、こちらの提案ポイントを3つ出してください。」</div>
+          </div>
+        `,
+        quiz: {
+          question: '商談後のフォローにAIを活用する最も効果的な使い方はどれですか？',
+          options: ['AIに全部任せてフォローしない', '商談メモをAIに整理させ、フォローアップメールの下書きを作らせる', '商談内容を全てSNSに投稿する', '次回の商談をAIにスケジュールさせる'],
+          answer: 1,
+          explanation: '正解！商談メモを基にAIでフォローアップメールの下書きを作ることで、迅速で質の高いフォローが可能です。'
+        }
+      }
+    ]
+  },
+  {
+    id: 3,
+    icon: '🎯',
+    title: 'プロンプト応用テクニック',
+    desc: 'ペルソナ設定・制約条件・出力制御など、より高度なプロンプト技術を習得します。',
+    color: 'rgba(255,215,0,0.2)',
+    lessons: [
+      {
+        title: 'ペルソナ・ロールプレイ活用法',
+        time: '15分',
+        content: `
+          <h3>AIにキャラクターを持たせる</h3>
+          <p>AIに特定のペルソナや役割を与えることで、出力の専門性・一貫性が大幅に向上します。</p>
+          <div class="example-block">
+            <div class="example-label">例：採用コンサルタントとして</div>
+            <div class="example-user">「あなたは採用コンサルタントとして10年の経験を持ち、特に中途採用と組織設計が専門です。以下の採用課題について、コンサルタントとしての視点でアドバイスしてください：〔課題〕」</div>
+          </div>
+          <div class="example-block">
+            <div class="example-label">例：ロールプレイ面接練習</div>
+            <div class="example-user">「あなたは大手企業の採用担当者です。私の面接練習に付き合ってください。志望動機を聞いてください。私が答えた後、フィードバックをしてください。」</div>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 活用シーン</div>
+            <p>• 厳しい上司役：プレゼンのフィードバック<br>• 顧客役：商談ロールプレイ<br>• 編集者役：文章レビュー<br>• 法務専門家役：契約書のチェック観点（※最終確認は専門家へ）</p>
+          </div>
+        `,
+        quiz: {
+          question: 'AIにペルソナを設定する主な効果はどれですか？',
+          options: ['AIを楽しませること', '出力の専門性・一貫性が向上すること', 'AIの速度が上がること', '無料で使えること'],
+          answer: 1,
+          explanation: '正解！AIにペルソナを与えることで、特定の専門分野での一貫した高品質な出力が得られます。'
+        }
+      },
+      {
+        title: '出力形式のコントロール',
+        time: '12分',
+        content: `
+          <h3>フォーマットを指定して使いやすい出力に</h3>
+          <p>「どんな形式で出力してほしいか」を明示すると、そのまま使える出力が得られます。</p>
+          <ul class="lesson-list">
+            <li><strong>表形式</strong>：「Markdown形式の表で出力してください」</li>
+            <li><strong>JSON</strong>：「JSON形式で構造化してください」（システム連携向け）</li>
+            <li><strong>箇条書き</strong>：「3点の箇条書きで簡潔に」</li>
+            <li><strong>見出し付き</strong>：「#見出し と ##小見出し を使って構造化してください」</li>
+          </ul>
+          <div class="example-block">
+            <div class="example-label">実践例：採用要件整理</div>
+            <div class="example-user">「以下の求人情報を、採用要件シートとして表形式に整理してください。<br>列：項目 / 必須要件 / 歓迎要件<br>---<br>〔求人情報〕」</div>
+          </div>
+        `,
+        quiz: {
+          question: 'AIの出力を表形式で得たい場合、プロンプトにどう書けばよいですか？',
+          options: ['「なんとかして表にして」', '「Markdown形式の表で出力してください」', '「表っぽく書いて」', '特に指定しなくていい'],
+          answer: 1,
+          explanation: '正解！「Markdown形式の表で」など、具体的なフォーマット指定が最も確実です。'
+        }
+      },
+      {
+        title: '反復改善とプロンプト管理',
+        time: '10分',
+        content: `
+          <h3>プロンプトをチームで共有・管理する</h3>
+          <p>良いプロンプトは「資産」です。個人に閉じず、チームで共有・改善することで組織全体の生産性が向上します。</p>
+          <ul class="lesson-list">
+            <li>NotionやGoogleドキュメントでプロンプト集を管理</li>
+            <li>「業務別×目的別」でカテゴリ分けして検索しやすく</li>
+            <li>出力例・改善履歴を残してバージョン管理</li>
+            <li>定期的にチームでベストプラクティスを共有</li>
+          </ul>
+          <div class="highlight-box">
+            <div class="box-title">🔑 プロンプト管理テンプレート</div>
+            <p>【プロンプト名】メール作成_初回営業<br>【用途】新規顧客への初回アプローチ<br>【プロンプト】〔テンプレート本文〕<br>【出力例】〔サンプル〕<br>【更新日】2024/04/01<br>【作成者】山田太郎</p>
+          </div>
+        `,
+        quiz: {
+          question: 'プロンプトをチームで管理する最大のメリットは何ですか？',
+          options: ['個人のプロンプトを隠せること', '組織全体でノウハウを共有し、生産性を向上させること', 'AIの利用料を節約できること', 'プロンプトを覚えなくて済むこと'],
+          answer: 1,
+          explanation: '正解！プロンプトをチームで共有・管理することで、個人のノウハウが組織の資産になり、全体の生産性向上につながります。'
+        }
+      }
+    ]
+  },
+  {
+    id: 4,
+    icon: '🔗',
+    title: 'AIツール連携と自動化',
+    desc: 'ChatGPT・Claude・各種SaaSとの組み合わせで、より高度な業務自動化を実現します。',
+    color: 'rgba(0,210,255,0.2)',
+    lessons: [
+      {
+        title: '主要AIツールの使い分け',
+        time: '18分',
+        content: `
+          <h3>ツール選択が生産性を決める</h3>
+          <p>用途に合わせて最適なツールを選ぶことで、コスト・品質・スピードを最適化できます。</p>
+          <ul class="lesson-list">
+            <li><strong>ChatGPT（GPT-4o）</strong>：バランス型。画像生成・コード・一般業務に強い</li>
+            <li><strong>Claude</strong>：長文・文書分析・安全性重視の業務向け。100,000文字以上の処理が可能</li>
+            <li><strong>Gemini</strong>：GoogleWorkspace連携。Gmail・ドキュメント・スプレッドシートとの統合</li>
+            <li><strong>Copilot（Microsoft）</strong>：Office365環境。Word・Excel・Teams内で直接使用</li>
+            <li><strong>Perplexity</strong>：Web検索との組み合わせ。最新情報の調査向け</li>
+          </ul>
+          <div class="tip-box">
+            <div class="box-title">💡 使い分けの基準</div>
+            <p>• 長文・契約書分析 → Claude<br>
+            • 画像生成・コード → ChatGPT<br>
+            • 最新情報調査 → Perplexity<br>
+            • Office業務 → Copilot</p>
+          </div>
+        `,
+        quiz: {
+          question: '大量の契約書テキストを分析したい場合、最も適したAIツールはどれですか？',
+          options: ['画像生成AI', 'Claude（長文処理が得意）', 'ゲーム向けAI', '翻訳専用ツール'],
+          answer: 1,
+          explanation: '正解！Claudeは長文処理に優れており、大量の契約書やドキュメント分析に最適です。'
+        }
+      },
+      {
+        title: 'Zapierで業務自動化',
+        time: '20分',
+        content: `
+          <h3>ノーコードでAI自動化を実現</h3>
+          <p>ZapierやMake（旧Integromat）などのノーコードツールを使えば、プログラミング不要でAIを中心とした業務自動化が可能です。</p>
+          <div class="highlight-box">
+            <div class="box-title">🔑 自動化の例</div>
+            <p><strong>パターン1</strong>：フォーム送信 → AI要約 → Slack通知<br>
+            <strong>パターン2</strong>：メール受信 → AI分類 → スプレッドシート記録<br>
+            <strong>パターン3</strong>：会議録音 → AI文字起こし → Notion保存<br>
+            <strong>パターン4</strong>：SNS言及 → AI感情分析 → 担当者メール</p>
+          </div>
+          <ul class="lesson-list">
+            <li>Zapier無料プランで月100タスクまで自動化可能</li>
+            <li>5000以上のアプリと連携対応</li>
+            <li>AI処理（ChatGPT等）を中間ステップとして挟める</li>
+            <li>複雑な条件分岐も視覚的に設定可能</li>
+          </ul>
+        `,
+        quiz: {
+          question: 'Zapierを使った業務自動化で必要なスキルはどれですか？',
+          options: ['Pythonなどのプログラミング', 'ノーコードで設定できるため特別なスキルは不要', 'データベース設計', 'サーバー管理'],
+          answer: 1,
+          explanation: '正解！Zapierはノーコードツールなので、プログラミング不要で業務自動化が実現できます。'
+        }
+      },
+      {
+        title: 'AI活用ロードマップの作り方',
+        time: '15分',
+        content: `
+          <h3>組織のAI活用を段階的に進める</h3>
+          <p>AIの導入は一度に全部ではなく、段階的に進めることが成功の鍵です。</p>
+          <div class="highlight-box">
+            <div class="box-title">📍 4段階ロードマップ</div>
+            <p><strong>Stage 1：個人活用（〜3ヶ月）</strong><br>個人レベルでのツール習熟・効果確認<br><br>
+            <strong>Stage 2：チーム共有（3〜6ヶ月）</strong><br>プロンプト集・活用事例の共有・標準化<br><br>
+            <strong>Stage 3：業務フロー統合（6〜12ヶ月）</strong><br>既存業務プロセスへのAI組み込み<br><br>
+            <strong>Stage 4：自動化・高度活用（12ヶ月〜）</strong><br>API・自動化ツールでの高度な業務効率化</p>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 成功のポイント</div>
+            <p>「全社一斉導入」より「パイロット部門→横展開」の方が失敗リスクが低く、成功事例を作りやすいです。</p>
+          </div>
+        `,
+        quiz: {
+          question: 'AI活用を組織で進める際の推奨アプローチはどれですか？',
+          options: ['全社員に一斉に義務化する', 'パイロット部門で試し、成功事例を作ってから横展開する', 'まず最も難しい自動化から始める', '外部ベンダーに全て任せる'],
+          answer: 1,
+          explanation: '正解！パイロット部門で成功事例を作ってから横展開するアプローチが、組織でのAI定着に最も効果的です。'
+        }
+      }
+    ]
+  },
+  {
+    id: 5,
+    icon: '🚀',
+    title: '実践ワークショップ・総まとめ',
+    desc: '実際の業務課題にAIを活用して解決するワークショップ形式で、学習内容を総復習します。',
+    color: 'rgba(255,107,107,0.15)',
+    lessons: [
+      {
+        title: '実践：採用業務へのAI活用',
+        time: '25分',
+        content: `
+          <h3>採用業務の課題をAIで解決する</h3>
+          <p>HR・採用担当者向けの具体的な活用シナリオです。</p>
+          <ul class="lesson-list">
+            <li><strong>求人票作成</strong>：ポジション概要を入力 → 魅力的な求人票を自動生成</li>
+            <li><strong>スカウトメール</strong>：候補者プロフィールを貼り付け → パーソナライズドメール生成</li>
+            <li><strong>面接評価シート</strong>：評価軸の設計・採点基準の標準化</li>
+            <li><strong>候補者サマリー</strong>：レジュメをAIで要約・比較分析</li>
+            <li><strong>オファーレター</strong>：条件を入力 → 丁寧なオファー文書生成</li>
+          </ul>
+          <div class="example-block">
+            <div class="example-label">実践例：スカウトメール生成</div>
+            <div class="example-user">「あなたは採用コンサルタントです。<br>以下のプロフィールの候補者に向けて、営業職のスカウトメールを書いてください。<br>・件名・本文・CTA込み<br>・200字以内・押しつけがましくない<br>---<br>候補者：〔スキル・経歴概要〕<br>ポジション：〔職種・特徴〕」</div>
+          </div>
+          <div class="tip-box">
+            <div class="box-title">💡 返信率を上げるコツ</div>
+            <p>候補者の経歴に具体的に言及することで返信率が平均2〜3倍に。AIで下書きを作り、具体的なポイントを人間が追加するハイブリッドが最強。</p>
+          </div>
+        `,
+        quiz: {
+          question: 'スカウトメールの返信率を上げるために最も効果的な方法はどれですか？',
+          options: ['同じテンプレートを大量送信する', '候補者の経歴に具体的に言及したパーソナライズドメールを送る', '英語でメールを送る', '送信時間を工夫する'],
+          answer: 1,
+          explanation: '正解！候補者の経歴に具体的に言及することで返信率が2〜3倍になります。AIで下書きを作り人間が個別情報を追加するハイブリッドが効果的です。'
+        }
+      },
+      {
+        title: '組織へのAI研修設計',
+        time: '20分',
+        content: `
+          <h3>社内AI研修を成功させるポイント</h3>
+          <p>コンサルタントや研修担当者として、組織内にAI文化を根付かせるための設計法です。</p>
+          <div class="highlight-box">
+            <div class="box-title">🔑 効果的な研修設計の5原則</div>
+            <p>① <strong>業務直結</strong>：参加者の実際の業務課題と紐づける<br>
+            ② <strong>ハンズオン中心</strong>：座学より実践の比率を7割以上に<br>
+            ③ <strong>段階的</strong>：基礎→応用の順で、成功体験を積む設計<br>
+            ④ <strong>継続的</strong>：1回で終わらず、フォローアップの仕組みを作る<br>
+            ⑤ <strong>測定可能</strong>：時短時間・活用頻度などKPIを設定</p>
+          </div>
+          <ul class="lesson-list">
+            <li>研修後3ヶ月のKPIフォロー調査が定着率を2倍に向上</li>
+            <li>「AI大使（社内エバンジェリスト）」を各部門に設置</li>
+            <li>社内AIコミュニティで事例・プロンプトを継続共有</li>
+          </ul>
+        `,
+        quiz: {
+          question: '社内AI研修で最も重要な設計要素はどれですか？',
+          options: ['最新の技術理論を教えること', '参加者の実際の業務課題と紐づけたハンズオン型設計', '英語での研修実施', '外部講師のみに任せること'],
+          answer: 1,
+          explanation: '正解！参加者の実際の業務課題と紐づけたハンズオン型設計が、AI研修を成功させる最重要要素です。'
+        }
+      },
+      {
+        title: '修了テスト・今後の学習ロードマップ',
+        time: '15分',
+        content: `
+          <h3>学習のまとめ</h3>
+          <p>本研修で学んだことを振り返り、今後の学習・実践計画を立てましょう。</p>
+          <div class="highlight-box">
+            <div class="box-title">📚 本研修で習得したこと</div>
+            <p>✅ 生成AIの仕組みと特性の理解<br>
+            ✅ ハルシネーションとリスク管理<br>
+            ✅ 効果的なプロンプト設計（4要素）<br>
+            ✅ 業務別テンプレートの活用<br>
+            ✅ Chain of Thought・ペルソナ設定<br>
+            ✅ ツール選択と業務自動化の基礎<br>
+            ✅ 組織へのAI展開ロードマップ</p>
+          </div>
+          <h3>今後の推奨ステップ</h3>
+          <ul class="lesson-list">
+            <li>明日から：1つの業務にAIを試用する（メール・議事録・資料作成）</li>
+            <li>1週間以内：プロンプト集を作り始める</li>
+            <li>1ヶ月以内：チームに共有・活用事例を1つ作る</li>
+            <li>3ヶ月以内：業務フローの1ステップをAI化する</li>
+          </ul>
+          <div class="tip-box">
+            <div class="box-title">💡 最後のメッセージ</div>
+            <p>AIは「使う人」と「使わない人」の生産性の差を10倍にする可能性があります。しかし、AIは思考の道具であり、最終判断は常に人間が行います。AIを正しく使いこなし、あなたの仕事をさらに価値あるものにしてください。</p>
+          </div>
+        `,
+        quiz: {
+          question: '研修修了後、明日からすぐ実践すべきことはどれですか？',
+          options: ['完璧なAI活用計画を立てる', '1つの業務にAIを試用してみる', '全業務を一度にAI化する', 'もう一度全部読み返す'],
+          answer: 1,
+          explanation: '正解！まず1つの業務にAIを試用することで、体験が理解を深め、次のステップへの自信につながります。'
+        }
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════
+// GAS ENDPOINT
+// ══════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwTlNbXt_jtGRI5olye6E9-APoniOw8hnS-4uhU028s02FM4vxibZS43A0JxVq8teK3/exec';
+
+function sendToGAS(lessonData) {
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return;
+  const mi = lessonData.mi;
+  const li = lessonData.li;
+  const payload = {
+    name: state.userName,
+    company: state.userCompany || '',
+    moduleName: MODULES[mi].title,
+    lessonName: MODULES[mi].lessons[li].title,
+    quizCorrect: lessonData.correct,
+    totalCompleted: Object.keys(state.completedLessons).length
+  };
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }).catch(() => {});
+}
+
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let state = {
+  userName: '',
+  userCompany: '',
+  completedLessons: {},   // { "moduleId-lessonId": true }
+  completedModules: {},   // { moduleId: true }
+  quizScores: {},         // { "moduleId-lessonId": true }
+  currentModule: 0,
+  currentLesson: 0,
+  selectedAnswer: null,
+  answered: false
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('ai_training_state');
+    if (saved) Object.assign(state, JSON.parse(saved));
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('ai_training_state', JSON.stringify(state));
+  } catch(e) {}
+}
+
+// ══════════════════════════════
+// SCREENS
+// ══════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ══════════════════════════════
+// WELCOME
+// ══════════════════════════════
+function startTraining() {
+  const input = document.getElementById('userName').value.trim();
+  const company = document.getElementById('userCompany').value.trim();
+  if (!input) { alert('お名前を入力してください'); return; }
+  if (!company) { alert('会社名を入力してください'); return; }
+  state.userName = input;
+  state.userCompany = company;
+  saveState();
+  showModules();
+}
+
+// ══════════════════════════════
+// MODULES
+// ══════════════════════════════
+function showModules() {
+  showScreen('modules-screen');
+  document.getElementById('greeting-text').textContent = `WELCOME, ${state.userName.toUpperCase()}`;
+
+  const completed = Object.keys(state.completedModules).length;
+  const total = MODULES.length;
+  const pct = Math.round(completed / total * 100);
+
+  document.getElementById('header-progress-text').textContent = `${completed} / ${total} 完了`;
+  document.getElementById('header-progress-fill').style.width = pct + '%';
+  document.getElementById('overall-progress-fill').style.width = pct + '%';
+  document.getElementById('overall-progress-pct').textContent = pct + '%';
+
+  const grid = document.getElementById('modules-grid');
+  grid.innerHTML = '';
+
+  MODULES.forEach((mod, mi) => {
+    const done = !!state.completedModules[mi];
+    const locked = mi > 0 && !state.completedModules[mi - 1];
+
+    const card = document.createElement('div');
+    card.className = 'module-card' + (done ? ' completed' : '') + (locked ? ' locked' : '');
+
+    const completedLessonsCount = mod.lessons.filter((_, li) => state.completedLessons[`${mi}-${li}`]).length;
+    const statusLabel = done ? 'DONE' : locked ? 'LOCKED' : completedLessonsCount > 0 ? 'IN PROGRESS' : 'NEW';
+    const statusClass = done ? 'status-done' : locked ? 'status-lock' : 'status-new';
+
+    card.innerHTML = `
+      <div class="module-header-row">
+        <div class="module-icon" style="background:${mod.color}">${mod.icon}</div>
+        <span class="module-status ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="module-num">MODULE ${String(mi + 1).padStart(2, '0')}</div>
+      <div class="module-title">${mod.title}</div>
+      <div class="module-desc">${mod.desc}</div>
+      <div class="module-meta">
+        <span>📖 ${mod.lessons.length} レッスン</span>
+        <span>✅ ${completedLessonsCount}/${mod.lessons.length} 完了</span>
+      </div>
+    `;
+
+    if (!locked) {
+      card.onclick = () => openModule(mi);
+    }
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════
+// LESSON
+// ══════════════════════════════
+function openModule(mi) {
+  state.currentModule = mi;
+  const mod = MODULES[mi];
+  // 未完了の最初のレッスンへ
+  let targetLesson = 0;
+  for (let li = 0; li < mod.lessons.length; li++) {
+    if (!state.completedLessons[`${mi}-${li}`]) { targetLesson = li; break; }
+    if (li === mod.lessons.length - 1) targetLesson = li;
+  }
+  openLesson(mi, targetLesson);
+}
+
+function openLesson(mi, li) {
+  state.currentModule = mi;
+  state.currentLesson = li;
+  state.selectedAnswer = null;
+  state.answered = false;
+  showScreen('lesson-screen');
+  renderSidebar();
+  renderLesson();
+}
+
+function renderSidebar() {
+  const mi = state.currentModule;
+  const mod = MODULES[mi];
+  const sidebar = document.getElementById('lesson-sidebar');
+  document.getElementById('sidebar-module-title').textContent = `MOD ${mi + 1}: ${mod.title}`;
+
+  // Remove old lessons
+  const existingLessons = sidebar.querySelectorAll('.sidebar-lesson');
+  existingLessons.forEach(el => el.remove());
+
+  mod.lessons.forEach((lesson, li) => {
+    const done = !!state.completedLessons[`${mi}-${li}`];
+    const active = li === state.currentLesson;
+    const div = document.createElement('div');
+    div.className = 'sidebar-lesson' + (active ? ' active' : '') + (done ? ' done' : '');
+    div.innerHTML = `<div class="lesson-dot"></div>${lesson.title}`;
+    div.onclick = () => openLesson(mi, li);
+    sidebar.appendChild(div);
+  });
+}
+
+function renderLesson() {
+  const mi = state.currentModule;
+  const li = state.currentLesson;
+  const mod = MODULES[mi];
+  const lesson = mod.lessons[li];
+
+  document.getElementById('lesson-breadcrumb').innerHTML =
+    `MODULE ${String(mi + 1).padStart(2, '0')} <span>/ ${mod.title}</span>`;
+  document.getElementById('lesson-title').textContent = lesson.title;
+  document.getElementById('lesson-meta').innerHTML =
+    `<span>⏱ 所要時間：${lesson.time}</span>
+     <span>${state.completedLessons[`${mi}-${li}`] ? '✅ 完了済み' : '📖 受講中'}</span>`;
+
+  // Content
+  document.getElementById('lesson-body').innerHTML = lesson.content + buildQuiz(mi, li);
+
+  // Nav
+  buildNav(mi, li);
+
+  // Quiz event
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', () => selectAnswer(opt));
+  });
+  const submitBtn = document.getElementById('quiz-submit');
+  if (submitBtn) submitBtn.addEventListener('click', submitAnswer);
+}
+
+function buildQuiz(mi, li) {
+  const lesson = MODULES[mi].lessons[li];
+  const quiz = lesson.quiz;
+  const alreadyAnswered = !!state.completedLessons[`${mi}-${li}`];
+  const letters = ['A', 'B', 'C', 'D'];
+
+  return `
+    <div class="quiz-section">
+      <div class="quiz-label">✏️ KNOWLEDGE CHECK</div>
+      <div class="quiz-question">${quiz.question}</div>
+      <div class="quiz-options">
+        ${quiz.options.map((opt, i) => `
+          <div class="quiz-option${alreadyAnswered && i === quiz.answer ? ' correct' : ''}" data-index="${i}">
+            <div class="option-letter">${letters[i]}</div>
+            ${opt}
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback${alreadyAnswered ? ' show ok' : ''}" id="quiz-feedback">
+        ${alreadyAnswered ? '✅ ' + quiz.explanation : ''}
+      </div>
+      ${!alreadyAnswered ? '<button class="btn-primary" id="quiz-submit">回答する</button>' : ''}
+    </div>
+  `;
+}
+
+function selectAnswer(opt) {
+  if (state.answered) return;
+  document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+  state.selectedAnswer = parseInt(opt.dataset.index);
+}
+
+function submitAnswer() {
+  if (state.selectedAnswer === null) { alert('選択肢を選んでください'); return; }
+  const mi = state.currentModule;
+  const li = state.currentLesson;
+  const quiz = MODULES[mi].lessons[li].quiz;
+  const correct = state.selectedAnswer === quiz.answer;
+
+  state.answered = true;
+  state.quizScores[`${mi}-${li}`] = correct;
+
+  document.querySelectorAll('.quiz-option').forEach((opt, i) => {
+    if (i === quiz.answer) opt.classList.add('correct');
+    else if (i === state.selectedAnswer && !correct) opt.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'ok' : 'ng');
+  fb.textContent = (correct ? '✅ ' : '❌ ') + quiz.explanation;
+
+  document.getElementById('quiz-submit').remove();
+
+  // Mark lesson complete
+  state.completedLessons[`${mi}-${li}`] = true;
+
+  // Check module complete
+  const allDone = MODULES[mi].lessons.every((_, idx) => state.completedLessons[`${mi}-${idx}`]);
+  if (allDone) state.completedModules[mi] = true;
+
+  sendToGAS({ mi, li, correct });
+  saveState();
+  buildNav(mi, li);
+  renderSidebar();
+
+  // All modules done?
+  const allModulesDone = MODULES.every((_, idx) => state.completedModules[idx]);
+  if (allModulesDone) {
+    setTimeout(() => showComplete(), 1500);
+  }
+}
+
+function buildNav(mi, li) {
+  const nav = document.getElementById('lesson-nav');
+  const mod = MODULES[mi];
+  const hasPrev = li > 0 || mi > 0;
+  const hasNext = li < mod.lessons.length - 1 || mi < MODULES.length - 1;
+
+  let html = '';
+  if (hasPrev) {
+    html += `<button class="btn-secondary" onclick="goPrev()">← 前へ</button>`;
+  }
+
+  const lessonDone = !!state.completedLessons[`${mi}-${li}`];
+  if (hasNext && lessonDone) {
+    html += `<button class="btn-primary" onclick="goNext()">次のレッスンへ →</button>`;
+  } else if (!hasNext && lessonDone) {
+    html += `<button class="btn-primary" onclick="goToModules()">コース一覧に戻る</button>`;
+  }
+  nav.innerHTML = html;
+}
+
+function goPrev() {
+  const mi = state.currentModule;
+  const li = state.currentLesson;
+  if (li > 0) openLesson(mi, li - 1);
+  else if (mi > 0) openLesson(mi - 1, MODULES[mi - 1].lessons.length - 1);
+}
+
+function goNext() {
+  const mi = state.currentModule;
+  const li = state.currentLesson;
+  const mod = MODULES[mi];
+  if (li < mod.lessons.length - 1) openLesson(mi, li + 1);
+  else if (mi < MODULES.length - 1) openLesson(mi + 1, 0);
+}
+
+function goToModules() { showModules(); }
+
+// ══════════════════════════════
+// COMPLETE
+// ══════════════════════════════
+function showComplete() {
+  const total = Object.keys(MODULES).reduce((acc, mi) => acc + MODULES[mi].lessons.length, 0);
+  const correct = Object.values(state.quizScores).filter(Boolean).length;
+  const pct = Math.round(correct / total * 100);
+
+  document.getElementById('complete-sub').textContent =
+    `${state.userName}さん、全6モジュール・全${total}レッスンを修了しました。おめでとうございます！`;
+  document.getElementById('cert-name').textContent = state.userName + ' 様';
+  document.getElementById('cert-score').textContent = `${pct}点`;
+
+  showScreen('complete-screen');
+}
+
+function printCert() { window.print(); }
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+loadState();
+if (state.userName) {
+  document.getElementById('userName').value = state.userName;
+}
+if (state.userCompany) {
+  document.getElementById('userCompany').value = state.userCompany;
+}
+</script>
+</body>
+</html>
